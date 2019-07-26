@@ -8,7 +8,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooKeeper;
 /**
- * zookeeper客户端与服务器会后的建立是一个异步的过程，构造方法在处理完客户端初始化工作后立即返回，在
+ * zookeeper客户端与服务器会话的建立是一个异步的过程，构造方法在处理完客户端初始化工作后立即返回，在
  * 大多情况下并没有真正建立好一个可用的会话，
  * 当会话真正创建完毕后，zookeeper服务端会向会话对应的客户端发送一个事件通知，以告知客户端，
  * 客户端只有获取这个通知之后，才算真正建立了会话
@@ -18,8 +18,9 @@ import org.apache.zookeeper.ZooKeeper;
  * ，客户端获取到通知之后进行相关业务处理
  * @author zgh
  *
+ *利用sessionid和sessionpwd构建复用会话，以维持之前会话的有效性
  */
-public class ZookeeperApplication implements Watcher{
+public class ZookeeperWithSessionId_PWD implements Watcher{
 
 	private static CountDownLatch countDownLatch = new CountDownLatch(1);
 	
@@ -29,10 +30,17 @@ public class ZookeeperApplication implements Watcher{
        //1.连接的zookeeper的服务器地址
 	  //2.指客户端与服务器会话的超时时间，毫秒为单位，
 		try {
-			ZooKeeper zookeeper = new ZooKeeper("192.168.1.5:2181",5000,new ZookeeperApplication());
+			ZooKeeper zookeeper = new ZooKeeper("192.168.1.141:2181",5000,new ZookeeperWithSessionId_PWD());
 		  System.out.println(zookeeper.getState());
 		  countDownLatch.await();
 		  System.out.println(zookeeper.getState());
+		  System.out.println("zookeeper 之前的对象"+zookeeper);
+		  long sessionId = zookeeper.getSessionId();
+		  byte[] pwd = zookeeper.getSessionPasswd();
+		  System.out.println(new String(pwd));
+		  zookeeper = new ZooKeeper("192.168.1.141:2181",5000,new ZookeeperWithSessionId_PWD(),sessionId,pwd);
+		  System.out.println("zookeeper before"+zookeeper);
+		  Thread.sleep(Integer.MAX_VALUE);
 		} catch (IOException e) {
 			
 			e.printStackTrace();
