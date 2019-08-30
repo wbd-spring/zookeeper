@@ -7,10 +7,32 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<dependencies>
+		<!-- zookeeper原生api -->
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>
 			<version>3.4.13</version>
+		</dependency>
+
+		<!-- zkClient api,基于原生api进行二次封装之后，使用更方便 -->
+		<dependency>
+			<groupId>com.github.sgroschupf</groupId>
+			<artifactId>zkclient</artifactId>
+			<version>0.1</version>
+		</dependency>
+
+		<!-- zookeeper curator 在原来的基础上封装了api，提供了一套易用性和可读性更强的fluent风格 的客户端api框架， 
+			还提供了类似共享锁服务，master选举机制和分布式计数器等 -->
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-framework</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-recipes</artifactId>
+			<version>4.2.0</version>
 		</dependency>
 	</dependencies>
 </project>

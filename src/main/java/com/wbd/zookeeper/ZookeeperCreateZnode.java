@@ -8,10 +8,10 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.Stat;
+import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.apache.zookeeper.ZooKeeper;
 
 /**
  * 创建节点
@@ -28,9 +28,10 @@ public class ZookeeperCreateZnode implements Watcher{
 		try {
 			ZooKeeper zookeeper = new ZooKeeper("192.168.1.141:2181",2000,new ZookeeperCreateZnode());
 			countDownLatch.await();
+			
 			System.out.println(zookeeper.getState());
 			//1.同步创建节点的方式
-			String path = zookeeper.create("/zk-book", "abcdef".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+			String path = zookeeper.create("/zk-book", "abcdef".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL.EPHEMERAL_SEQUENTIAL);
 			System.out.println("创建成功="+path);
          
 			//2.异步创建节点的方式，需要实现StringCallbacke接口，当服务端创建完毕，zookeeper客户端回自动调用这个方法，进行相关逻辑处理
@@ -51,7 +52,15 @@ public class ZookeeperCreateZnode implements Watcher{
 
 	public void process(WatchedEvent event) {
 	
+		//通知状态
+		KeeperState  keeperstate = event.getState();
+		
+		//事件类型
+		EventType  type = event.getType();
+		
+		
 		System.out.println("event=="+event);
+		
 		if(event.getState()==KeeperState.SyncConnected) {
 			countDownLatch.countDown();
 		}
