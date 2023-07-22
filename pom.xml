@@ -11,7 +11,7 @@
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>
-			<version>3.4.13</version>
+			<version>3.4.14</version>
 		</dependency>
 
 		<!-- zkClient api,基于原生api进行二次封装之后，使用更方便 -->
